@@ -31,7 +31,27 @@ BGREY=47
 #Times means how many times you can clear a cell
 Index=0
 COUNT=2
-Times=5
+Times=5 
+#the judgement of the move of army
+mvarg=1
+
+#the array related to the map
+#ao cheng Zhang can create a function to change the content of this array
+#to control the action of function armymv()
+arr_mv1[0]=15  
+arr_mv2[0]=4  
+arr_mv1[1]=14  
+arr_mv2[1]=4
+   
+# 1->right move 2->up move 3->left move 4->down move 0->stay still(the end)
+
+#the first place of army:
+m1y=16
+m2y=17
+m1x=1    
+
+
+ 
 #temporary var,please delete it after finished function Mine
 counter=1
 #--------------函数--------------
@@ -133,7 +153,7 @@ function GameOver ()
                 *)        continue;;
                 esac
         done
-        return $OK       
+       return $OK       
 }
             
 #Main函数
@@ -148,8 +168,10 @@ function Main ()
         do
                 case $key in
 
-                [nN])        exec $(dirname $0)/$(basename $0);;
-                [xX])        GameExit;;
+                [nN])        exec $(dirname $0)/$(basename $0)
+                             mvarg=0 ;;  
+                [xX])        GameExit
+                             mvarg=0  ;;  
                 [aA])    left;;
                 [dD])    right;;
                 [wW])    up;;
@@ -264,8 +286,76 @@ function Operated ()
 return 1
 }
 
-Init
-Menu
-Draw
-Main
+#Init of army square:
+function armyInit() 
+{ 
+local line3
+line3=$(for((i=0 ; i<2  ; i++)) do $ECHO "|${ESC}${RED}m ■ ${ESC}${NULL}m"  ; done ) 
+for ((i=14; i<Y; i++))
+do
+  $ECHO " ${ESC}$((i+2));1H${line3}|"   
+done
 
+return $ok
+
+}
+
+#movement of the army
+#the Timer of army
+function moveTimer()
+{
+local line4
+local line5
+local line6 line7
+
+line4=$( $ECHO "The clock is ticking: 4 S")
+line5=$( $ECHO "The clock is ticking: 3 s")
+line6=$( $ECHO "The clock is ticking: 2 s")
+line7=$( $ECHO "The clock is ticking: 1 S")   
+
+sleep 1s
+$ECHO " ${ESC}$((Y+2));1H${line4}"
+sleep 1s
+$ECHO " ${ESC}$((Y+2));1H${line5}"
+sleep 1s
+$ECHO " ${ESC}$((Y+2));1H${line6}"
+sleep 1s
+$ECHO " ${ESC}$((Y+2));1H${line7}"  
+
+return $ok
+}
+
+#The function to control army movement
+function armymv()
+{
+for ((i=0 ; i<2 ;i++))
+do
+moveTimer   
+m1y= ${arr_mv1[$i]}
+m1x= ${arr_mv2[$i]}   
+line=$(for((i=0 ; i<2  ; i++)) do $ECHO "|${ESC}${RED}m ■ ${ESC}${NULL}m"  ; done ) 
+Draw
+$ECHO "${ESC}${m1y};${m1x}H${line}"
+$ECHO "${ESC}$((m1y + 1));${m1x}H${line}"
+
+
+done 
+return $ok 
+
+}  
+
+
+
+
+
+
+
+
+
+Init
+Menu  
+Draw 
+armyInit
+armymv
+     
+  
