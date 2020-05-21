@@ -45,7 +45,6 @@ arr_mv2[0]=1
 
 hide=${ESC}?25l
 show=${ESC}?25h
-back=${ESC}$((row+1));$((col*4-1))H 
  
 #temporary var,please delete it after finished function Mine
 counter=1
@@ -322,25 +321,33 @@ line6=$( $ECHO "The clock is ticking: 2 s")
 line7=$( $ECHO "The clock is ticking: 1 S")   
 
 sleep 1s
-$ECHO $hide
-$ECHO " ${ESC}$((Y+2));1H${line4}"
-$ECHO $back
-$ECHO $show
+#$ECHO " ${ESC}$((Y+2));1H${line4}"
+#$ECHO $hide
+$ECHO "${ESC}$((Y+2));1H"
+$ECHO "${line4}"
+$ECHO "${ESC}$((row+1));$((col*4-1))H" 
+#$ECHO $show
 sleep 1s
-$ECHO $hide
-$ECHO " ${ESC}$((Y+2));1H${line5}"
-$ECHO $back
-$ECHO $show
+#$ECHO $hide
+#$ECHO " ${ESC}$((Y+2));1H${line5}"
+$ECHO "${ESC}$((Y+2));1H"
+$ECHO "${line5}"
+$ECHO "${ESC}$((row+1));$((col*4-1))H" 
+#$ECHO $show
 sleep 1s
-$ECHO $hide
-$ECHO " ${ESC}$((Y+2));1H${line6}"
-$ECHO $back
-$ECHO $show
+#$ECHO $hide
+#$ECHO " ${ESC}$((Y+2));1H${line6}"
+$ECHO "${ESC}$((Y+2));1H"
+$ECHO "${line6}"
+$ECHO "${ESC}$((row+1));$((col*4-1))H" 
+#$ECHO $show
 sleep 1s
-$ECHO $hide
-$ECHO " ${ESC}$((Y+2));1H${line7}" 
-$ECHO $back
-$ECHO $show
+#$ECHO $hide
+#$ECHO " ${ESC}$((Y+2));1H${line7}" 
+$ECHO "${ESC}$((Y+2));1H"
+$ECHO "${line7}"
+$ECHO "${ESC}$((row+1));$((col*4-1))H" 
+#$ECHO $show
 
 return $OK
 }
@@ -352,7 +359,7 @@ for ((i=0 ; i<60 ; i++))
 do
 if [ $mvarg -eq 1 ]
 then
-moveTimer &   
+moveTimer   
 #m1y= ${arr_mv1[$i]}
 #m1x= ${arr_mv2[$i]} 
 #m1y=1
@@ -361,7 +368,7 @@ line=$(for((i=0 ; i<2  ; i++)) do $ECHO "|${ESC}${RED}m ■ ${ESC}${NULL}m"  ; d
 #$ECHO $hide
 #$ECHO "${ESC}${m1y};${m1x}H${line}" 
 #$ECHO "${ESC}$((m1y+1));${m1x}H${line}"
-#$ECHO $back
+#$ECHO "${ESC}$((row+1));$((col*4-1))H" 
 #$ECHO $show
 else
 break
@@ -378,7 +385,7 @@ Menu
 Draw
 Modify
 #armyInit
-armymv &  
+armymv &   
 Main
      
   
