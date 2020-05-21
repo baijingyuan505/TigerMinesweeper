@@ -355,30 +355,50 @@ return $OK
 #the function to control army movement
 function armymv()
 {
-for ((i=0 ; i<60 ; i++))
-do
-if [ $mvarg -eq 1 ]
-then
 moveTimer   
-#m1y= ${arr_mv1[$i]}
-#m1x= ${arr_mv2[$i]} 
-#m1y=1
-#m1x=1  
+m1y= ${arr_mv1[$i]}
+m1x= ${arr_mv2[$i]} 
+m1y=1
+m1x=1  
 line=$(for((i=0 ; i<2  ; i++)) do $ECHO "|${ESC}${RED}m ■ ${ESC}${NULL}m"  ; done ) 
-#$ECHO $hide
-#$ECHO "${ESC}${m1y};${m1x}H${line}" 
-#$ECHO "${ESC}$((m1y+1));${m1x}H${line}"
-#$ECHO "${ESC}$((row+1));$((col*4-1))H" 
-#$ECHO $show
-else
-break
-fi
-done
+$ECHO $hide
+check   
+$ECHO "${ESC}${m1y};${m1x}H${line}" 
+$ECHO "${ESC}$((m1y+1));${m1x}H${line}"
+$ECHO "${ESC}$((row+1));$((col*4-1))H" 
+$ECHO $show
 return $OK
 
 }  
 
-
+function check()
+{
+for ((i=0 ; i<256 ; i++))
+do
+local x1 y1
+  for ((k=0 ; k<16 ; k++))
+   do
+   if [ $i -gt $((k*16 - 1)) ] && [ $i -le $((k*16 + 15)) ]
+   then
+   x1=`expr $k + 1`
+   y2=`expr $i - $((i-k*16+1))`
+   else
+   continue
+   fi
+  done 
+ case ${danger[$i]} in
+    Y*) $ECHO "${ESC}${x1};$((y1*3))H${danger[$i]:1}"
+;;
+    *)  case ${iswalk[$i]} in
+          0)    
+          $ECHO "${ESC}${x1};$((y1*3))H${$ECHO "${ESC}${SBLUE}m■ "}";;       
+          1)
+          $ECHO "${ESC}${X1};$((y1*3))H${$ECHO "${ESC}${GREY}m■ "}";;
+        esac    
+;;
+ esac
+done
+}
 
 Init
 Menu  
