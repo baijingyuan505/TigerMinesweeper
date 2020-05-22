@@ -10,7 +10,7 @@ local walk_num		#行走区域大小
 local unwalk_num	#不可行走区域大小
 local j				#行走区域雷数
 local k				#非行走区域雷数
-danger=(0)			#存储并导出最终结果（整合时可以考虑改为在main函数定义）
+Map=(0)			#存储并导出最终结果（整合时可以考虑改为在main函数定义）
 case $1 in
 1)
 	walk_num=60
@@ -90,10 +90,10 @@ for((i=0;i<256;++i))
 do
 	if [[ "${iswalk[$i]}" == "1" ]]
 	then
-		danger[$i]=${walk[$j]}			#将路线逻辑位置j是否有雷填入数组	
+		Map[$i]=${walk[$j]}			#将路线逻辑位置j是否有雷填入数组	
 		j=` expr $j + 1 `
 	else
-		danger[$i]=${unwalk[$k]}		#否则将非路线逻辑位置k是否有雷填入
+		Map[$i]=${unwalk[$k]}		#否则将非路线逻辑位置k是否有雷填入
 		k=` expr $k + 1 `
 	fi
 done
@@ -104,7 +104,7 @@ k=0		#列（已定义的local变量）
 
 for((i=0;i<256;++i))
 do
-if [[ "${danger[$i]}" == "0" ]]		#对于每个无地雷的格子
+if [[ "${Map[$i]}" == "0" ]]		#对于每个无地雷的格子
 then
 	j=` expr $i / 16 `				#计算行
 	k=` expr $i % 16 `				#计算列
@@ -113,62 +113,62 @@ then
 		if [[ "$k" == "0" ]]		#可能为左上角
 		then
 			temp=` expr $i + 1 `
-			if [[ "${danger[$temp]}" == "9" ]]
+			if [[ "${Map[$temp]}" == "9" ]]
 			then 
-				danger[$i]=` expr ${danger[$i]} + 1 `
+				Map[$i]=` expr ${Map[$i]} + 1 `
 			fi
 			temp=` expr $i + 16 `
-			if [[ "${danger[$temp]}" == "9" ]]
+			if [[ "${Map[$temp]}" == "9" ]]
 			then 
-				danger[$i]=` expr ${danger[$i]} + 1 `
+				Map[$i]=` expr ${Map[$i]} + 1 `
 			fi
 			temp=` expr $i + 17 `
-			if [[ "${danger[$temp]}" == "9" ]]
+			if [[ "${Map[$temp]}" == "9" ]]
 			then 
-				danger[$i]=` expr ${danger[$i]} + 1 `
+				Map[$i]=` expr ${Map[$i]} + 1 `
 			fi
 		elif [[ "$k" == "15" ]]		#也可能为右上角
 		then
 			temp=` expr $i - 1 `
-			if [[ "${danger[$temp]}" == "9" ]]
+			if [[ "${Map[$temp]}" == "9" ]]
 			then 
-				danger[$i]=` expr ${danger[$i]} + 1 `
+				Map[$i]=` expr ${Map[$i]} + 1 `
 			fi
 			temp=` expr $i + 15 `
-			if [[ "${danger[$temp]}" == "9" ]]
+			if [[ "${Map[$temp]}" == "9" ]]
 			then 
-				danger[$i]=` expr ${danger[$i]} + 1 `
+				Map[$i]=` expr ${Map[$i]} + 1 `
 			fi
 			temp=` expr $i + 16 `
-			if [[ "${danger[$temp]}" == "9" ]]
+			if [[ "${Map[$temp]}" == "9" ]]
 			then 
-				danger[$i]=` expr ${danger[$i]} + 1 `
+				Map[$i]=` expr ${Map[$i]} + 1 `
 			fi
 		else						#不然就是上边界
 			temp=` expr $i - 1 `
-			if [[ "${danger[$temp]}" == "9" ]]
+			if [[ "${Map[$temp]}" == "9" ]]
 			then 
-				danger[$i]=` expr ${danger[$i]} + 1 `
+				Map[$i]=` expr ${Map[$i]} + 1 `
 			fi
 			temp=` expr $i + 1 `
-			if [[ "${danger[$temp]}" == "9" ]]
+			if [[ "${Map[$temp]}" == "9" ]]
 			then 
-				danger[$i]=` expr ${danger[$i]} + 1 `
+				Map[$i]=` expr ${Map[$i]} + 1 `
 			fi
 			temp=` expr $i + 15 `
-			if [[ "${danger[$temp]}" == "9" ]]
+			if [[ "${Map[$temp]}" == "9" ]]
 			then 
-				danger[$i]=` expr ${danger[$i]} + 1 `
+				Map[$i]=` expr ${Map[$i]} + 1 `
 			fi
 			temp=` expr $i + 16 `
-			if [[ "${danger[$temp]}" == "9" ]]
+			if [[ "${Map[$temp]}" == "9" ]]
 			then 
-				danger[$i]=` expr ${danger[$i]} + 1 `
+				Map[$i]=` expr ${Map[$i]} + 1 `
 			fi
 			temp=` expr $i + 17 `
-			if [[ "${danger[$temp]}" == "9" ]]
+			if [[ "${Map[$temp]}" == "9" ]]
 			then 
-				danger[$i]=` expr ${danger[$i]} + 1 `
+				Map[$i]=` expr ${Map[$i]} + 1 `
 			fi
 		fi
 	elif [[ "$j" == "15" ]]			#若为第15行
@@ -176,158 +176,158 @@ then
 		if [[ "$k" == "0" ]]		#要么左下角
 		then
 			temp=` expr $i - 16 `
-			if [[ "${danger[$temp]}" == "9" ]]
+			if [[ "${Map[$temp]}" == "9" ]]
 			then 
-				danger[$i]=` expr ${danger[$i]} + 1 `
+				Map[$i]=` expr ${Map[$i]} + 1 `
 			fi
 			temp=` expr $i - 15 `
-			if [[ "${danger[$temp]}" == "9" ]]
+			if [[ "${Map[$temp]}" == "9" ]]
 			then 
-				danger[$i]=` expr ${danger[$i]} + 1 `
+				Map[$i]=` expr ${Map[$i]} + 1 `
 			fi
 			temp=` expr $i + 1 `
-			if [[ "${danger[$temp]}" == "9" ]]
+			if [[ "${Map[$temp]}" == "9" ]]
 			then 
-				danger[$i]=` expr ${danger[$i]} + 1 `
+				Map[$i]=` expr ${Map[$i]} + 1 `
 			fi
 		elif [[ "$k" == "15" ]]		#要么右下角
 		then
 			temp=` expr $i - 17 `
-			if [[ "${danger[$temp]}" == "9" ]]
+			if [[ "${Map[$temp]}" == "9" ]]
 			then 
-				danger[$i]=` expr ${danger[$i]} + 1 `
+				Map[$i]=` expr ${Map[$i]} + 1 `
 			fi
 			temp=` expr $i - 16 `
-			if [[ "${danger[$temp]}" == "9" ]]
+			if [[ "${Map[$temp]}" == "9" ]]
 			then 
-				danger[$i]=` expr ${danger[$i]} + 1 `
+				Map[$i]=` expr ${Map[$i]} + 1 `
 			fi
 			temp=` expr $i - 1 `
-			if [[ "${danger[$temp]}" == "9" ]]
+			if [[ "${Map[$temp]}" == "9" ]]
 			then 
-				danger[$i]=` expr ${danger[$i]} + 1 `
+				Map[$i]=` expr ${Map[$i]} + 1 `
 			fi
 		else						#不然就是下边界
 			temp=` expr $i - 17 `
-			if [[ "${danger[$temp]}" == "9" ]]
+			if [[ "${Map[$temp]}" == "9" ]]
 			then 
-				danger[$i]=` expr ${danger[$i]} + 1 `
+				Map[$i]=` expr ${Map[$i]} + 1 `
 			fi
 			temp=` expr $i - 16 `
-			if [[ "${danger[$temp]}" == "9" ]]
+			if [[ "${Map[$temp]}" == "9" ]]
 			then 
-				danger[$i]=` expr ${danger[$i]} + 1 `
+				Map[$i]=` expr ${Map[$i]} + 1 `
 			fi
 			temp=` expr $i - 15 `
-			if [[ "${danger[$temp]}" == "9" ]]
+			if [[ "${Map[$temp]}" == "9" ]]
 			then 
-				danger[$i]=` expr ${danger[$i]} + 1 `
+				Map[$i]=` expr ${Map[$i]} + 1 `
 			fi
 			temp=` expr $i - 1 `
-			if [[ "${danger[$temp]}" == "9" ]]
+			if [[ "${Map[$temp]}" == "9" ]]
 			then 
-				danger[$i]=` expr ${danger[$i]} + 1 `
+				Map[$i]=` expr ${Map[$i]} + 1 `
 			fi
 			temp=` expr $i + 1 `
-			if [[ "${danger[$temp]}" == "9" ]]
+			if [[ "${Map[$temp]}" == "9" ]]
 			then 
-				danger[$i]=` expr ${danger[$i]} + 1 `
+				Map[$i]=` expr ${Map[$i]} + 1 `
 			fi
 		fi
 	elif [[ "$k" == "0" ]]		#这两行去掉，剩下的要么左边界
 	then
 		temp=` expr $i - 16 `
-		if [[ "${danger[$temp]}" == "9" ]]
+		if [[ "${Map[$temp]}" == "9" ]]
 		then 
-			danger[$i]=` expr ${danger[$i]} + 1 `
+			Map[$i]=` expr ${Map[$i]} + 1 `
 		fi
 		temp=` expr $i - 15 `
-		if [[ "${danger[$temp]}" == "9" ]]
+		if [[ "${Map[$temp]}" == "9" ]]
 		then 
-			danger[$i]=` expr ${danger[$i]} + 1 `
+			Map[$i]=` expr ${Map[$i]} + 1 `
 		fi
 		temp=` expr $i + 1 `
-		if [[ "${danger[$temp]}" == "9" ]]
+		if [[ "${Map[$temp]}" == "9" ]]
 		then 
-			danger[$i]=` expr ${danger[$i]} + 1 `
+			Map[$i]=` expr ${Map[$i]} + 1 `
 		fi
 		temp=` expr $i + 16 `
-		if [[ "${danger[$temp]}" == "9" ]]
+		if [[ "${Map[$temp]}" == "9" ]]
 		then 
-			danger[$i]=` expr ${danger[$i]} + 1 `
+			Map[$i]=` expr ${Map[$i]} + 1 `
 		fi
 		temp=` expr $i + 17 `
-		if [[ "${danger[$temp]}" == "9" ]]
+		if [[ "${Map[$temp]}" == "9" ]]
 		then 
-			danger[$i]=` expr ${danger[$i]} + 1 `
+			Map[$i]=` expr ${Map[$i]} + 1 `
 		fi
 	elif [[ "$k" == "15" ]]		#要么右边界
 	then
 		temp=` expr $i - 17 `
-		if [[ "${danger[$temp]}" == "9" ]]
+		if [[ "${Map[$temp]}" == "9" ]]
 		then 
-			danger[$i]=` expr ${danger[$i]} + 1 `
+			Map[$i]=` expr ${Map[$i]} + 1 `
 		fi
 		temp=` expr $i - 16 `
-		if [[ "${danger[$temp]}" == "9" ]]
+		if [[ "${Map[$temp]}" == "9" ]]
 		then 
-			danger[$i]=` expr ${danger[$i]} + 1 `
+			Map[$i]=` expr ${Map[$i]} + 1 `
 		fi
 		temp=` expr $i - 1 `
-		if [[ "${danger[$temp]}" == "9" ]]
+		if [[ "${Map[$temp]}" == "9" ]]
 		then 
-			danger[$i]=` expr ${danger[$i]} + 1 `
+			Map[$i]=` expr ${Map[$i]} + 1 `
 		fi
 		temp=` expr $i + 15 `
-		if [[ "${danger[$temp]}" == "9" ]]
+		if [[ "${Map[$temp]}" == "9" ]]
 		then 
-			danger[$i]=` expr ${danger[$i]} + 1 `
+			Map[$i]=` expr ${Map[$i]} + 1 `
 		fi
 		temp=` expr $i + 16 `
-		if [[ "${danger[$temp]}" == "9" ]]
+		if [[ "${Map[$temp]}" == "9" ]]
 		then 
-			danger[$i]=` expr ${danger[$i]} + 1 `
+			Map[$i]=` expr ${Map[$i]} + 1 `
 		fi
 	else						#应该就剩中间那片了
 		temp=` expr $i - 17 `
-		if [[ "${danger[$temp]}" == "9" ]]
+		if [[ "${Map[$temp]}" == "9" ]]
 		then 
-			danger[$i]=` expr ${danger[$i]} + 1 `
+			Map[$i]=` expr ${Map[$i]} + 1 `
 		fi
 		temp=` expr $i - 16 `
-		if [[ "${danger[$temp]}" == "9" ]]
+		if [[ "${Map[$temp]}" == "9" ]]
 		then 
-			danger[$i]=` expr ${danger[$i]} + 1 `
+			Map[$i]=` expr ${Map[$i]} + 1 `
 		fi
 		temp=` expr $i - 15 `
-		if [[ "${danger[$temp]}" == "9" ]]
+		if [[ "${Map[$temp]}" == "9" ]]
 		then 
-			danger[$i]=` expr ${danger[$i]} + 1 `
+			Map[$i]=` expr ${Map[$i]} + 1 `
 		fi
 		temp=` expr $i - 1 `
-		if [[ "${danger[$temp]}" == "9" ]]
+		if [[ "${Map[$temp]}" == "9" ]]
 		then 
-			danger[$i]=` expr ${danger[$i]} + 1 `
+			Map[$i]=` expr ${Map[$i]} + 1 `
 		fi
 		temp=` expr $i + 1 `
-		if [[ "${danger[$temp]}" == "9" ]]
+		if [[ "${Map[$temp]}" == "9" ]]
 		then 
-			danger[$i]=` expr ${danger[$i]} + 1 `
+			Map[$i]=` expr ${Map[$i]} + 1 `
 		fi
 		temp=` expr $i + 15 `
-		if [[ "${danger[$temp]}" == "9" ]]
+		if [[ "${Map[$temp]}" == "9" ]]
 		then 
-			danger[$i]=` expr ${danger[$i]} + 1 `
+			Map[$i]=` expr ${Map[$i]} + 1 `
 		fi
 		temp=` expr $i + 16 `
-		if [[ "${danger[$temp]}" == "9" ]]
+		if [[ "${Map[$temp]}" == "9" ]]
 		then 
-			danger[$i]=` expr ${danger[$i]} + 1 `
+			Map[$i]=` expr ${Map[$i]} + 1 `
 		fi
 		temp=` expr $i + 17 `
-		if [[ "${danger[$temp]}" == "9" ]]
+		if [[ "${Map[$temp]}" == "9" ]]
 		then 
-			danger[$i]=` expr ${danger[$i]} + 1 `
+			Map[$i]=` expr ${Map[$i]} + 1 `
 		fi
 	fi
 fi
