@@ -29,8 +29,8 @@ BGREY=47
 #the array related to the map
 #ao cheng Zhang can create a function to change the content of this array
 #to control the action of function armymv()
-arr_mv1[0]=1  
-arr_mv2[0]=1  
+#arr_mv1[0]=1  
+#arr_mv2[0]=1  
 
 
 #line4=$( $ECHO "The clock is ticking: 4 S")
@@ -314,6 +314,8 @@ return $flag
 function armyInit() 
 { 
 local line3
+m1y=16
+m1x=1  
 line3=$(for((i=0 ; i<2  ; i++)) do $ECHO "|${ESC}${RED}m ■ ${ESC}${NULL}m"  ; done ) 
 for ((i=14; i<Y; i++))
 do
@@ -360,6 +362,176 @@ function Input ()
 }
 
 
+#关卡函数，之后会更改draw函数来画出路径
+#arr1是x坐标，arr2是y坐标
+function Stage1()
+{
+arr1=(1 5 9 13 17 21 25 25 25 25 25 25 25 25 25 25 25 25 25 25 25 29 33 37 41 45 49 53 57)
+arr2=(16 16 16 16 16 16 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 2 2 2 2 2 2 2 2) 
+Draw
+local line3 line4 line5
+        line3=$( for (( i=1; i<9; i++)) do $ECHO "| ■ " ;done)
+	line4=$( for (( i=1; i<3; i++)) do $ECHO "| ■ " ;done)
+	line5=$( for (( i=1; i<11; i++)) do $ECHO "| ■ ";done)
+        $ECHO "${ESC}16;1H${line3}"
+	$ECHO "${ESC}17;1H${line3}"
+$ECHO "${ESC}2;25H${line5}"
+$ECHO "${ESC}3;25H${line5}"
+	for ((Y=4; Y<16; Y++)) do $ECHO "${ESC}${Y};25H${line4}" ; done
+
+        return $OK
+
+}
+function Stage2()
+{
+arr1=(1 5 9 9 9 9 9 13 17 21 25 29 33 33 33 33 33 33 33 33 33 33 33 37 41 45 49 53 57)
+arr2=(16 16 16 15 14 13 12 12 12 12 12 12 12 11 10 9 8 7 6 5 4 3 2 2 2 2 2 2 2)
+Draw
+local line1 line2 line3
+	line1=$( for (( i=1; i<9; i++)) do $ECHO "| ■ " ;done)
+	line2=$( for (( i=1; i<3; i++)) do $ECHO "| ■ " ;done)
+	line3=$( for (( i=1; i<5; i++)) do $ECHO "| ■ " ;done)
+	$ECHO "${ESC}16;1H${line3}"
+	$ECHO "${ESC}17;1H${line3}"
+	for ((Y=4; Y<12; Y++)) do $ECHO "${ESC}${Y};33H${line2}" ; done
+	for ((Y=14; Y<16; Y++)) do $ECHO "${ESC}${Y};9H${line2}" ; done
+	for ((Y=2; Y<4; Y++)) do $ECHO "${ESC}${Y};33H${line1}" ; done
+	for ((Y=12; Y<14; Y++)) do $ECHO "${ESC}${Y};9H${line1}" ; done
+	for ((Y=16; Y<18; Y++)) do $ECHO "${ESC}${Y};1H${line3}" ; done
+	return $OK
+}
+function Stage3()
+{
+arr1=(1 5 9 13 17 17 17 17 17 17 17 17 17 17 21 25 29 33 37 37 37 37 37 37 37 37 37 41 45 49 53 57 57 57 57 57 57 57 57 57 57 57 57 57 57)
+arr2=(16 16 16 16 16 15 14 13 12 11 10 9 8 7 7 7 7 7 7 8 9 10 11 12 13 14 15 1515 15 15 15 14 13 12 11 10 9 8 7 6 5 4 3 2) 
+
+Draw
+local line1 line2 line3
+line1=$( for (( i=1; i<8; i++)) do $ECHO "| ■ " ;done)
+        line2=$( for (( i=1; i<3; i++)) do $ECHO "| ■ " ;done)
+        line3=$( for (( i=1; i<7; i++)) do $ECHO "| ■ " ;done)
+	for ((Y=9; Y<15; Y++))
+	 do 
+	$ECHO "${ESC}${Y};17H${line2}" ;
+	$ECHO "${ESC}${Y};37H${line2}" ;
+ 	done
+        for ((Y=7; Y<9; Y++)) do $ECHO "${ESC}${Y};17H${line1}" ; done
+        for ((Y=15; Y<17; Y++)) do $ECHO "${ESC}${Y};37H${line1}" ; done
+        for ((Y=2; Y<16; Y++)) do $ECHO "${ESC}${Y};57H${line2}" ; done
+        for ((Y=16; Y<18; Y++)) do $ECHO "${ESC}${Y};1H${line3}" ; done
+	$ECHO "${ESC}15;17H${line2}"
+        return $OK
+}
+function Stage4()
+{
+arr1=(1 5 9 13 17 17 17 17 17 17 17 13 9 5 1 1 1 1 1 1 5 9 13 17 21 25 29 33 33 33 33 33 33 33 33 33 33 33 33 37 41 45 49 53 57 57 57 57 57 57 57 57 57 57 57 57 57 57 57)
+arr2=(16 16 16 16 16 15 14 13 12 11 10 10 10 10 10 9 8 7 6 5 5 5 5 5 5 5 5 5 6 7 8 9 10 11 12 13 14 15 16 16 16 16 16 16 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2)
+Draw
+local line1 line2 line3 line4 line5
+        line1=$( for (( i=1; i<9; i++)) do $ECHO "| ■ " ;done)
+        line2=$( for (( i=1; i<3; i++)) do $ECHO "| ■ " ;done)
+        line3=$( for (( i=1; i<7; i++)) do $ECHO "| ■ " ;done)
+        for ((Y=2; Y<18; Y++)) do $ECHO "${ESC}${Y};57H${line2}" ; done
+        for ((Y=16; Y<18; Y++)) do $ECHO "${ESC}${Y};33H${line3}" ; done
+        for ((Y=5; Y<18; Y++)) do $ECHO "${ESC}${Y};33H${line2}" ; done
+        for ((Y=5; Y<7; Y++)) do $ECHO "${ESC}${Y};1H${line1}" ; done
+        for ((Y=7; Y<10; Y++)) do $ECHO "${ESC}${Y};1H${line2}" ; done
+        for ((Y=12; Y<16; Y++)) do $ECHO "${ESC}${Y};17H${line2}" ; done
+        for ((Y=10; Y<12; Y++)) do $ECHO "${ESC}${Y};1H${line3}" ; done
+        for ((Y=16; Y<18; Y++)) do $ECHO "${ESC}${Y};1H${line3}" ; done
+
+        return $OK
+}
+function Stage5()
+{
+arr1=(1 5 9 9 9 9 9 9 9 5 1 1 1 1 1 1 1 1 1 5 9 13 17 17 17 17 17 21 25 25 25 25 25 25 25 25 25 25 25 29 33 37 41 41 41 41 41 41 45 49 53 57 57 57 57 57 53 49 45 41 41 41 41 41 45 49 53 57)
+arr2=(16 16 16 15 14 13 12 11 10 10 10 9 8 7 6 5 4 3 2 2 2 2 2 3 4 5 6 6 6 7 8 9 10 11 12 13 14 15 16 16 16 16 16 15 14 13 12 11 11 11 11 11 10 9 8 7 7 7 7 7 6 5 4 3 2 2 2 2 2)
+Draw
+local line4 line2 line6 
+        line4=$( for (( i=1; i<5; i++)) do $ECHO "| ■ " ;done)
+        line2=$( for (( i=1; i<3; i++)) do $ECHO "| ■ " ;done)
+        line6=$( for (( i=1; i<7; i++)) do $ECHO "| ■ " ;done)
+        for ((Y=2; Y<4; Y++)) do 
+	$ECHO "${ESC}${Y};1H${line6}" ;
+	$ECHO "${ESC}${Y};41H${line6}" ;
+	 done
+	for ((Y=4; Y<6; Y++)) do 
+        $ECHO "${ESC}${Y};1H${line2}" ;
+        $ECHO "${ESC}${Y};17H${line2}" ;
+	$ECHO "${ESC}${Y};41H${line2}" ;
+         done
+for ((Y=8; Y<16; Y++)) do   
+        $ECHO "${ESC}${Y};25H${line2}" ;
+	done
+        for ((Y=7; Y<9; Y++)) do $ECHO "${ESC}${Y};41H${line6}" ; done
+for ((Y=10; Y<18; Y++)) do $ECHO "${ESC}${Y};9H${line2}" ; done
+for ((Y=11; Y<18; Y++)) do $ECHO "${ESC}${Y};41H${line2}" ; done
+
+        for ((Y=11; Y<13; Y++)) do $ECHO "${ESC}${Y};41H${line6}" ; done
+        for ((Y=16; Y<18; Y++)) do
+	 $ECHO "${ESC}${Y};1H${line4}" ; 
+	$ECHO "${ESC}${Y};25H${line6}" ;
+	done
+        for ((Y=10; Y<12; Y++)) do $ECHO "${ESC}${Y};1H${line4}" ; done
+        for ((Y=6; Y<10; Y++)) do $ECHO "${ESC}${Y};1H${line2}" ; done
+        for ((Y=9; Y<11; Y++)) do $ECHO "${ESC}${Y};57H${line2}" ; done
+ 	$ECHO "${ESC}6;41H${line2}" ;
+	for ((Y=6; Y<8; Y++)) do $ECHO "${ESC}${Y};17H${line4}" ; done
+        return $OK
+
+}
+
+#选择关卡函数
+function StageSelect()
+{
+clear
+cat<<EOF
+                        -----------------------------
+                        |     请输入1～5选择关卡    |
+                        |          (1)第一关        |
+                        |          (2)第二关        |
+                        |          (3)第三关        |
+                        |          (4)第四关        |
+                        |          (5)第五关        |
+                        -----------------------------
+
+                           
+EOF
+
+local key1
+while read -sn 1 key1
+do
+case $key1 in
+1)Stage1
+  Modify
+ # armyInit
+  Main
+;; 
+2)Stage2
+  Modify
+ # armyInit
+  Main
+;;
+3)Stage3
+  Modify
+ # armyInit
+  Main
+;;
+4)Stage4
+  Modify
+ # armyInit
+  Main;;
+5)Stage5
+  Modify
+ # armyInit
+  Main
+;;
+*)continue;;
+esac
+ done
+return $OK
+     } 
+
 
 function Main()
 {
@@ -367,7 +539,7 @@ for ((i=0 ; i<60 ; i++))
 do
 for ((j=4;j>=1;j--))
 do
-$ECHO "${ESC}$((Y+6));1H"
+$ECHO "${ESC}26;1H"
 $ECHO "The clock is ticking: ${j} S        Clear a mine: ${Times} times"
 $ECHO "${ESC}$((row+1));$((col*4-1))H" 
 Input
@@ -377,10 +549,11 @@ done
 #m1x= ${arr_mv2[$i]} 
 #m1y=1
 #m1x=1
-line=$(for((i=0 ; i<2  ; i++)) do $ECHO "|${ESC}${RED}m ■ ${ESC}${NULL}m"  ; done ) 
-$ECHO "${ESC}${m1y};${m1x}H${line}" 
-$ECHO "${ESC}$((m1y+1));${m1x}H${line}"
-$ECHO "${ESC}$((row+1));$((col*4-1))H" 
+armymv 
+line=$($ECHO "|${ESC}${RED}m ■ ${ESC}${NULL}m")  
+#$ECHO "${ESC}${m1y};${m1x}H${line}" 
+#$ECHO "${ESC}$((m1y+1));${m1x}H${line}"
+$ECHO "${ESC}$((row+1));$((col*4-1))H"    
 Input
 done
 return $OK
@@ -388,12 +561,83 @@ return $OK
 }  
 
 
+#the function to control army movement
+function armymv()
+{   
+ 
+local line3
+m1y=${arr2[$i]}
+m1x=${arr1[$i]}   
+line3=$(for((i=0;i<2;i++)) do $ECHO "|${ESC}${RED}m ■ ${ESC}${NULL}m"; done ) 
+$ECHO "${ESC}${m1y};${m1x}H${line3}"
+$ECHO "${ESC}$((m1y+1));${m1x}H${line3}"
+
+local temp1 temp2
+temp1=$((m1y-1))
+temp2=$((temp1*16-1))
+local temp3
+temp3=$((m1x+3))
+temp1=$((temp3/2))  
+local arr_x1 arr_x2 
+ arr_x1=`expr $temp2 + $temp1`   
+ arr_x2=`expr $temp2 + $temp1 + 16`
+if [ ${#map[${arr_x1}]} -eq 1 ] || [ ${#map[${arr_x2}]} -eq 1 ]  
+then 
+  GameOver
+elif [ $m1y -eq 2] && [ $m1x -eq 57 ]
+then
+  GameWin
+fi 
+return $OK
+
+}  
+
+function check()
+{ 
+local line1
+local line2
+line1=$($ECHO "|${ESC}${SBLUE}m ■ ${ESC}${NULL}m")
+line2=$($ECHO "|${ESC}${GREY}m ■ ${ESC}${NULL}m")   
+for ((i=0 ; i<256 ; i++))
+do
+local x1 y1
+  for ((k=0 ; k<16 ; k++))
+   do
+   if [ $i -gt $((k*16 - 1)) ] && [ $i -le $((k*16 + 15)) ]
+   then
+   x1=$((k+2))
+   j=$(($k*16))  
+   y1=`expr $i - $j`
+ 
+   else
+   continue
+   fi
+  done
+local zy1
+local temp   
+ temp=$(($y1*3))  
+zy1=`expr $temp - 1` 
+ case ${map[$i]} in
+    Y*) $ECHO "${ESC}${x1};$((y1*3))H${map[$i]:1}"
+;;
+     *)  case ${iswalk[$i]} in
+          0)    
+          $ECHO "${ESC}${x1};${zy1}H${line1}";;       
+          1)
+          $ECHO "${ESC}${X1};${zy1}H${line2}";;
+        esac    
+;;
+ esac
+done
+}
 
 Init
 Menu  
-Draw
-Modify
+#Draw
+StageSelect  
+
+#Modify
 #armyInit
-Main
+#Main
      
   
