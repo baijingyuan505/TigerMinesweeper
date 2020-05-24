@@ -502,13 +502,13 @@ local key1
 while read -sn 1 key1
 do
 case $key1 in
-1)Stage1
-  Modify
+1)Stage1 
+  Modify  
  # armyInit
   Main
 ;; 
 2)Stage2
-  Modify
+  Modify  
  # armyInit
   Main
 ;;
@@ -517,11 +517,11 @@ case $key1 in
  # armyInit
   Main
 ;;
-4)Stage4
+4)Stage4 
   Modify
  # armyInit
   Main;;
-5)Stage5
+5)Stage5  
   Modify
  # armyInit
   Main
@@ -536,8 +536,8 @@ return $OK
 function Main()
 {
 for ((i=0 ; i<60 ; i++))
-do
-for ((j=4;j>=1;j--))
+do 
+for ((j=10;j>=1;j--))
 do
 $ECHO "${ESC}26;1H"
 $ECHO "The clock is ticking: ${j} S        Clear a mine: ${Times} times"
@@ -548,7 +548,7 @@ done
 #m1y= ${arr_mv1[$i]}
 #m1x= ${arr_mv2[$i]} 
 #m1y=1
-#m1x=1
+#m1x=1 
 armymv 
 line=$($ECHO "|${ESC}${RED}m ■ ${ESC}${NULL}m")  
 #$ECHO "${ESC}${m1y};${m1x}H${line}" 
@@ -564,7 +564,6 @@ return $OK
 #the function to control army movement
 function armymv()
 {   
- 
 local line3
 m1y=${arr2[$i]}
 m1x=${arr1[$i]}   
@@ -581,10 +580,10 @@ temp1=$((temp3/2))
 local arr_x1 arr_x2 
  arr_x1=`expr $temp2 + $temp1`   
  arr_x2=`expr $temp2 + $temp1 + 16`
-if [ ${#map[${arr_x1}]} -eq 1 ] || [ ${#map[${arr_x2}]} -eq 1 ]  
+if [ "${map[${arr_x1}]}" == "9" ] || [ "${map[${arr_x2}]}" == "9" ] 
 then 
   GameOver
-elif [ $m1y -eq 2] && [ $m1x -eq 57 ]
+elif [ $m1y -eq 2 ] && [ $m1x -eq 57 ]
 then
   GameWin
 fi 
