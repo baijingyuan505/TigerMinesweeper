@@ -1,6 +1,7 @@
 #!/bin/bash
 ECHO="echo -ne" #不换行输出且处理特殊字符
 ESC="\033[" #转义序列，用于颜色设置
+#statement: ${ESC}y;xH this sets the cursor's location
 #变量
 OK=0
 FALSE=1
@@ -26,36 +27,23 @@ BPURPLE=45
 BSBLUE=46
 BGREY=47
 
-#the array related to the map
-#ao cheng Zhang can create a function to change the content of this array
-#to control the action of function armymv()
-#arr_mv1[0]=1  
-#arr_mv2[0]=1  
 
-
-#line4=$( $ECHO "The clock is ticking: 4 S")
-#line5=$( $ECHO "The clock is ticking: 3 s")
-#line6=$( $ECHO "The clock is ticking: 2 s")
-#line7=$( $ECHO "The clock is ticking: 1 S") 
-   
-# 1->right move 2->up move 3->left move 4->down move 0->stay still(the end)
 
 hide=${ESC}?25l
 show=${ESC}?25h
 
 key=0
-
+zeroidx=0
 #
 iswalk=(0)	#哪些路线为行走路线
 export walk_num		#行走区域大小
 export unwalk_num	#不可行走区域大小
 export j				#行走区域雷数
 export k				#非行走区域雷数
-export mines
 export Times
+export mines
 map=(0)
 source bury.sh
-#generate map in function Init
 
  
 #--------------函数--------------
@@ -67,11 +55,7 @@ function Init ()
         trap "GameExit;" 2 15
         stty -echo
         $ECHO "${ESC}?25l" 
-#generate map in function Init
-        burymines 2
-        Times=$((mines+2))
-#
-#
+
         touch null.txt
         return $OK
 }
@@ -127,7 +111,7 @@ MENUEND
         while read -s -n 1 key
         do
                 case $key in
-                1) X=16;Y=16;MCount=50;break
+                1) X=16;Y=16;break
                 ;;
                 2) GameExit
                 ;;
@@ -157,7 +141,7 @@ function Draw ()
 function GameOver ()
 {
         local key msgtitle=$1
-        PMsg "$msgtitle" "Congratulation on winning the game!是否重新开始?<y/n>" "Thank You"
+        PMsg "$msgtitle" "是否重新开始?<y/n>" "Thank You"
         while read -s -n 1 key
         do
                 case $key in
@@ -173,7 +157,7 @@ function GameOver ()
 function GameWin ()
 {
         local key msgtitle=$1
-        PMsg "$msgtitle" "是否重新开始?<y/n>" "Thank You"
+        PMsg "$msgtitle" "Congratulation on winning the game!是否重新开始?<y/n>" "Thank You"
         while read -s -n 1 key
         do
                 case $key in
@@ -192,6 +176,18 @@ function Modify ()
 $ECHO "${ESC}$((Y+1));1H"
 row=$X
 col=1
+up
+Clear
+Open
+right
+Clear
+Open
+down
+Clear
+Open
+left
+Clear
+Open
 for((i=1;i<=((X/2));i++))
 do
 right
@@ -202,95 +198,6 @@ up
 done
 return $OK
 }
-
-
-#open a cell
-function Open ()
-{
-if Operated
-then return $OK
-fi
-if [ $content = 9 ]
-then GameOver
-     return $OK
-fi
-$ECHO "${ESC}${ORANGE}m${content} "
-$ECHO "${ESC}2D"
-num=$content
-content="Y${num}"
-return $OK
-}
-
-
-#clear a mine using one opportunities
-function Clear ()
-{
-if Operated
-then return $OK
-fi
-if [ $content = 9 ]
-then $ECHO "${ESC}${ORANGE}mX "
-mines=`expr $mines - 1`
-else $ECHO "${ESC}${ORANGE}mNo"
-fi
-$ECHO "${ESC}2D"
-#the game s winning logic
-if [ $mines -eq 0 ]
-then GameWin
-fi
-#
-Times=`expr $Times - 1`
-if [ $Times -eq 0 ]
-then GameOver
-fi
-num=$content
-content="Y${num}"
-return $OK
-}
-
-
-#move functions
-function left ()
-{
-if [ $col -ne 1 ]
-then $ECHO "${ESC}$((row+1));$((col*4-4-1))H"
-col=`expr $col - 1` 
-export row
-export col
-fi
-return $OK
-}
-function right ()
-{
-if [ $col -ne $Y ]
-then $ECHO "${ESC}$((row+1));$((col*4+4-1))H"
-col=`expr $col + 1`
-export row
-export col
-fi
-return $OK
-}
-function up ()
-{
-if [ $row -ne 1 ]
-then $ECHO "${ESC}$((row));$((col*4-1))H"
-row=`expr $row - 1`
-export row
-export col
-fi
-return $OK
-}
-function down ()
-{
-if [ $row -ne $X ]
-then $ECHO "${ESC}$((row+2));$((col*4-1))H"
-row=`expr $row + 1`
-export row
-export col
-fi
-return $OK
-}
-
 
 #see if this cell is operated
 function Operated ()
@@ -309,21 +216,113 @@ return $flag
 }
 
 
-#statement: ${ESC}y;xH this sets the cursor's location
-#Init of army square:
-function armyInit() 
-{ 
-local line3
-m1y=16
-m1x=1  
-line3=$(for((i=0 ; i<2  ; i++)) do $ECHO "|${ESC}${RED}m ■ ${ESC}${NULL}m"  ; done ) 
-for ((i=14; i<Y; i++))
-do
-  $ECHO " ${ESC}$((i+2));1H${line3}|"   
-done
-
+#open a cell
+function Open ()
+{
+#if 
+Operated
+#then return $OK
+#fi
+if [ $content ]&&[ $content = 9 ]
+then GameOver
+     return $OK
+fi
+$ECHO "${ESC}${ORANGE}m${content} "
+$ECHO "${ESC}2D"
+if [ $zeroidx -eq 0 ]&&[ $content ]&&[ $content = 0 ]
+then Zero
+$ECHO "${ESC}$((row+1));$((col*4-1))H"
+fi
 return $OK
+}
 
+
+function Zero ()
+{
+if [ $row -eq 16 ]||[ $row -eq 1 ]||[ $col -eq 16 ]||[ $col -eq 1 ]
+then
+return $OK
+fi
+zeroidx=1
+down
+Open
+left
+Open
+up
+Open
+up
+Open
+right
+Open
+right
+Open
+down
+Open
+down
+Open
+left
+Open
+zeroidx=0
+return $OK
+}
+
+
+#clear a mine using one opportunities
+function Clear ()
+{
+Operated
+if [ $content = 9 ]
+then $ECHO "${ESC}${ORANGE}mX "
+     map[$idx]=" "
+mines=`expr $mines - 1`
+else $ECHO "${ESC}${ORANGE}mNo"
+fi
+$ECHO "${ESC}2D"
+#the game s winning logic
+if [ $mines -eq 0 ]
+then GameWin
+fi
+#
+Times=`expr $Times - 1`
+if [ $Times -eq 0 ]
+then GameOver
+fi
+return $OK
+}
+
+
+#move functions
+function left ()
+{
+if [ $col -ne 1 ]
+then $ECHO "${ESC}$((row+1));$((col*4-4-1))H"
+col=`expr $col - 1` 
+fi
+return $OK
+}
+function right ()
+{
+if [ $col -ne $Y ]
+then $ECHO "${ESC}$((row+1));$((col*4+4-1))H"
+col=`expr $col + 1`
+fi
+return $OK
+}
+function up ()
+{
+if [ $row -ne 1 ]
+then $ECHO "${ESC}$((row));$((col*4-1))H"
+row=`expr $row - 1`
+fi
+return $OK
+}
+function down ()
+{
+if [ $row -ne $X ]
+then $ECHO "${ESC}$((row+2));$((col*4-1))H"
+row=`expr $row + 1`
+fi
+return $OK
 }
 
 
@@ -362,7 +361,7 @@ function Input ()
 }
 
 
-#关卡函数，之后会更改draw函数来画出路径
+
 #arr1是x坐标，arr2是y坐标
 function Stage1()
 {
@@ -378,7 +377,8 @@ local line3 line4 line5
 $ECHO "${ESC}2;25H${line5}"
 $ECHO "${ESC}3;25H${line5}"
 	for ((Y=4; Y<16; Y++)) do $ECHO "${ESC}${Y};25H${line4}" ; done
-
+X=16 
+Y=16
         return $OK
 
 }
@@ -398,6 +398,8 @@ local line1 line2 line3
 	for ((Y=2; Y<4; Y++)) do $ECHO "${ESC}${Y};33H${line1}" ; done
 	for ((Y=12; Y<14; Y++)) do $ECHO "${ESC}${Y};9H${line1}" ; done
 	for ((Y=16; Y<18; Y++)) do $ECHO "${ESC}${Y};1H${line3}" ; done
+X=16
+Y=16
 	return $OK
 }
 function Stage3()
@@ -420,6 +422,8 @@ line1=$( for (( i=1; i<8; i++)) do $ECHO "| ■ " ;done)
         for ((Y=2; Y<16; Y++)) do $ECHO "${ESC}${Y};57H${line2}" ; done
         for ((Y=16; Y<18; Y++)) do $ECHO "${ESC}${Y};1H${line3}" ; done
 	$ECHO "${ESC}15;17H${line2}"
+X=16
+Y=16
         return $OK
 }
 function Stage4()
@@ -439,7 +443,8 @@ local line1 line2 line3 line4 line5
         for ((Y=12; Y<16; Y++)) do $ECHO "${ESC}${Y};17H${line2}" ; done
         for ((Y=10; Y<12; Y++)) do $ECHO "${ESC}${Y};1H${line3}" ; done
         for ((Y=16; Y<18; Y++)) do $ECHO "${ESC}${Y};1H${line3}" ; done
-
+X=16 
+Y=16
         return $OK
 }
 function Stage5()
@@ -477,6 +482,8 @@ for ((Y=11; Y<18; Y++)) do $ECHO "${ESC}${Y};41H${line2}" ; done
         for ((Y=9; Y<11; Y++)) do $ECHO "${ESC}${Y};57H${line2}" ; done
  	$ECHO "${ESC}6;41H${line2}" ;
 	for ((Y=6; Y<8; Y++)) do $ECHO "${ESC}${Y};17H${line4}" ; done
+X=16 
+Y=16
         return $OK
 
 }
@@ -499,36 +506,29 @@ cat<<EOF
 EOF
 
 local key1
-while read -sn 1 key1
-do
+#while 
+read -sn 1 key1
+#do
 case $key1 in
 1)Stage1 
-  Modify  
- # armyInit
-  Main
 ;; 
 2)Stage2
-  Modify  
- # armyInit
-  Main
 ;;
 3)Stage3
-  Modify
- # armyInit
-  Main
 ;;
 4)Stage4 
-  Modify
- # armyInit
-  Main;;
-5)Stage5  
-  Modify
- # armyInit
-  Main
 ;;
-*)continue;;
+5)Stage5  
+;;
+*)exec $(dirname $0)/$(basename $0)
+;;
+# *)continue;;
 esac
- done
+# done
+burymines $key1
+Times=$((j+24))
+  Modify
+  Main
 return $OK
      } 
 
@@ -539,20 +539,13 @@ for ((i=0 ; i<60 ; i++))
 do 
 for ((j=10;j>=1;j--))
 do
-$ECHO "${ESC}26;1H"
+$ECHO "${ESC}$((Y+6));1H"
 $ECHO "The clock is ticking: ${j} S        Clear a mine: ${Times} times"
 $ECHO "${ESC}$((row+1));$((col*4-1))H" 
 Input
 done
-#no need of mvarg
-#m1y= ${arr_mv1[$i]}
-#m1x= ${arr_mv2[$i]} 
-#m1y=1
-#m1x=1 
+
 armymv 
-line=$($ECHO "|${ESC}${RED}m ■ ${ESC}${NULL}m")  
-#$ECHO "${ESC}${m1y};${m1x}H${line}" 
-#$ECHO "${ESC}$((m1y+1));${m1x}H${line}"
 $ECHO "${ESC}$((row+1));$((col*4-1))H"    
 Input
 done
@@ -567,9 +560,13 @@ function armymv()
 local line3
 m1y=${arr2[$i]}
 m1x=${arr1[$i]}   
+
 line3=$(for((i=0;i<2;i++)) do $ECHO "|${ESC}${RED}m ■ ${ESC}${NULL}m"; done ) 
 $ECHO "${ESC}${m1y};${m1x}H${line3}"
 $ECHO "${ESC}$((m1y+1));${m1x}H${line3}"
+
+#$ECHO "${ESC}${tempy};${tempx}H${line3}"
+#$ECHO "${ESC}$((tempy+1));${tempx}H${line3}"
 
 local temp1 temp2
 temp1=$((m1y-1))
@@ -586,7 +583,30 @@ then
 elif [ $m1y -eq 2 ] && [ $m1x -eq 57 ]
 then
   GameWin
-fi 
+fi
+
+
+#if ((i%2==1))
+#then 
+#$ECHO "${ESC}${oddy};${oddx}H${map[${odd1}]}"
+#Open
+#$ECHO "${ESC}$((oddy+1));${oddx}H${map[${odd1}]}"
+#Open
+#odd1=$arr_x1
+#odd2=$arr_x2
+#oddy=${m1y}
+#oddx=$((m1x+2))
+#elif [ $i -ne 0 ]
+#then
+#$ECHO "${ESC}${eveny};${evenx}H${map[${even1}]}"
+#Open
+#$ECHO "${ESC}$((even+1));${evenx}H${map[${even1}]}"
+#Open
+#even1=$arr_x1
+#even2=$arr_x2
+#eveny=${m1y}
+#evenx=$((m1x+2))
+#fi
 return $OK
 
 }  
@@ -632,11 +652,8 @@ done
 
 Init
 Menu  
-#Draw
 StageSelect  
 
-#Modify
-#armyInit
-#Main
+
      
   
