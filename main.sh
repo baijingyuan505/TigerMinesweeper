@@ -45,6 +45,12 @@ export mines
 map=(0)
 source bury.sh
 
+
+#values for refreshing:function RE
+y=16
+x=1
+IDX=D
+value=1
  
 #--------------函数--------------
 #初始化函数（无必要请不要更改）
@@ -200,18 +206,24 @@ return $OK
 }
 
 #see if this cell is operated
-function Operated ()
+function AC1 ()
 {
-local flag
-num=$((row*Y-Y+col))
-idx=`expr $num - 1`
-content=${map[$idx]}
-case $content in
-Y*) flag=0
-;;
-*) flag=1
-;;
-esac
+a=$1
+b=$2
+content=${map[((a*Y-Y+b-1))]}
+idx=$((a*Y-Y+b-1))
+return $OK
+}
+
+function AC2 ()
+{
+c=$1
+d=$2
+value=${iswalk[((c*Y-Y+d-1))]}
+if [ $value -eq 1 ]
+then flag=0
+else flag=1
+fi
 return $flag
 }
 
@@ -219,23 +231,28 @@ return $flag
 #open a cell
 function Open ()
 {
-#if 
-Operated
-#then return $OK
-#fi
-if [ $content ]&&[ $content = 9 ]
+AC1 ${row} ${col}
+if [ "$content" == "9" ]
 then GameOver
      return $OK
 fi
 $ECHO "${ESC}${ORANGE}m${content} "
 $ECHO "${ESC}2D"
-if [ $zeroidx -eq 0 ]&&[ $content ]&&[ $content = 0 ]
+if [ $zeroidx -eq 0 ]&&[ "$content" == "0" ]
 then Zero
-$ECHO "${ESC}$((row+1));$((col*4-1))H"
 fi
 return $OK
 }
 
+function ReOpen ()
+{
+_row=$1
+_col=$2
+AC1 ${_row} ${_col}
+$ECHO "${ESC}$((_row+1));$((_col*4-1))H"
+$ECHO "${ESC}m${content} "
+return $OK
+}
 
 function Zero ()
 {
@@ -262,6 +279,7 @@ down
 Open
 left
 Open
+up
 zeroidx=0
 return $OK
 }
@@ -270,19 +288,17 @@ return $OK
 #clear a mine using one opportunities
 function Clear ()
 {
-Operated
-if [ $content = 9 ]
+AC1 ${row} ${col}
+if [ "$content" == "9" ]
 then $ECHO "${ESC}${ORANGE}mX "
      map[$idx]=" "
 mines=`expr $mines - 1`
 else $ECHO "${ESC}${ORANGE}mNo"
 fi
 $ECHO "${ESC}2D"
-#the game s winning logic
 if [ $mines -eq 0 ]
 then GameWin
 fi
-#
 Times=`expr $Times - 1`
 if [ $Times -eq 0 ]
 then GameOver
@@ -537,10 +553,10 @@ function Main()
 {
 for ((i=0 ; i<60 ; i++))
 do 
-for ((j=10;j>=1;j--))
+for ((j=5;j>=1;j--))
 do
 $ECHO "${ESC}$((Y+6));1H"
-$ECHO "The clock is ticking: ${j} S        Clear a mine: ${Times} times"
+$ECHO "The clock is ticking: ${j} S        Clear a mine: ${Times} times "
 $ECHO "${ESC}$((row+1));$((col*4-1))H" 
 Input
 done
@@ -556,7 +572,8 @@ return $OK
 
 #the function to control army movement
 function armymv()
-{   
+{
+
 local line3
 m1y=${arr2[$i]}
 m1x=${arr1[$i]}   
@@ -564,9 +581,6 @@ m1x=${arr1[$i]}
 line3=$(for((i=0;i<2;i++)) do $ECHO "|${ESC}${RED}m ■ ${ESC}${NULL}m"; done ) 
 $ECHO "${ESC}${m1y};${m1x}H${line3}"
 $ECHO "${ESC}$((m1y+1));${m1x}H${line3}"
-
-#$ECHO "${ESC}${tempy};${tempx}H${line3}"
-#$ECHO "${ESC}$((tempy+1));${tempx}H${line3}"
 
 local temp1 temp2
 temp1=$((m1y-1))
@@ -585,31 +599,53 @@ then
   GameWin
 fi
 
+#   
+RE
 
-#if ((i%2==1))
-#then 
-#$ECHO "${ESC}${oddy};${oddx}H${map[${odd1}]}"
-#Open
-#$ECHO "${ESC}$((oddy+1));${oddx}H${map[${odd1}]}"
-#Open
-#odd1=$arr_x1
-#odd2=$arr_x2
-#oddy=${m1y}
-#oddx=$((m1x+2))
-#elif [ $i -ne 0 ]
-#then
-#$ECHO "${ESC}${eveny};${evenx}H${map[${even1}]}"
-#Open
-#$ECHO "${ESC}$((even+1));${evenx}H${map[${even1}]}"
-#Open
-#even1=$arr_x1
-#even2=$arr_x2
-#eveny=${m1y}
-#evenx=$((m1x+2))
-#fi
+
 return $OK
 
-}  
+}
+
+
+function RE ()
+{
+
+if [ $IDX = D ]||[ $IDX = A ]
+then
+ReOpen $((y-1)) ${x}
+ReOpen ${y} ${x}
+  if ([ $y -ne 0 ])&&(AC2 ${y-2} ${x})
+  then IDX=W
+  elif ([ $y -ne $Y ])&&(AC2 ${y+1} ${x})
+  then IDX=S
+  fi
+fi
+
+if [ $IDX = W ]||[ $IDX = S ]
+then
+ReOpen ${y} $((x+1))
+ReOpen ${y} ${x}
+  if ([ $x -ne $X ])&&(AC2 ${y} ${x+2})
+  then IDX=D
+  elif ([ $x -ne 0 ])&&(AC2 ${y} ${x-1})
+  then IDX=S
+  fi
+fi
+
+case $IDX in
+D)x=`expr $x + 1`
+;;
+A)x=`expr $x - 1`
+;;
+W)y=`expr $y - 1`
+;;
+S)y=`expr $y + 1`
+;;
+esac
+
+return $OK
+}
 
 function check()
 { 
