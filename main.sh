@@ -591,7 +591,9 @@ temp1=$((temp3/2))
 local arr_x1 arr_x2 
  arr_x1=`expr $temp2 + $temp1`   
  arr_x2=`expr $temp2 + $temp1 + 16`
-if [ "${map[${arr_x1}]}" == "9" ] || [ "${map[${arr_x2}]}" == "9" ] 
+ arr_x3=`expr $arr_x1 - 1`
+ arr_x4=`expr $arr_x2 - 1`  
+if [ "${map[${arr_x1}]}" == "9" ] || [ "${map[${arr_x2}]}" == "9" ] || [ "${map[${arr_x3}]}" == "9" ] || [ "${map[${arr_x4}]}" == "9" ] 
 then 
   GameOver
 elif [ $m1y -eq 2 ] && [ $m1x -eq 57 ]
