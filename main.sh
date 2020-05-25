@@ -583,7 +583,7 @@ $ECHO "${ESC}${m1y};${m1x}H${line3}"
 $ECHO "${ESC}$((m1y+1));${m1x}H${line3}"
 
 local temp1 temp2
-temp1=$((m1y-1))
+temp1=$((m1y-2))
 temp2=$((temp1*16-1))
 local temp3
 temp3=$((m1x+3))
