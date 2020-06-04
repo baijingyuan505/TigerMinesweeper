@@ -46,11 +46,11 @@ map=(0)
 source bury.sh
 
 
-#values for refreshing:function RE
-y=16
-x=1
-IDX=D
-value=1
+
+
+tempy=16
+tempx=1
+LoseFlag=false
  
 #--------------函数--------------
 #初始化函数（无必要请不要更改）
@@ -206,7 +206,7 @@ return $OK
 }
 
 #see if this cell is operated
-function AC1 ()
+function Calc()
 {
 a=$1
 b=$2
@@ -215,23 +215,12 @@ idx=$((a*Y-Y+b-1))
 return $OK
 }
 
-function AC2 ()
-{
-c=$1
-d=$2
-value=${iswalk[((c*Y-Y+d-1))]}
-if [ $value -eq 1 ]
-then flag=0
-else flag=1
-fi
-return $flag
-}
 
 
 #open a cell
 function Open ()
 {
-AC1 ${row} ${col}
+Calc ${row} ${col}
 if [ "$content" == "9" ]
 then GameOver
      return $OK
@@ -248,7 +237,7 @@ function ReOpen ()
 {
 _row=$1
 _col=$2
-AC1 ${_row} ${_col}
+Calc ${_row} ${_col}
 $ECHO "${ESC}$((_row+1));$((_col*4-1))H"
 $ECHO "${ESC}m${content} "
 return $OK
@@ -288,7 +277,7 @@ return $OK
 #clear a mine using one opportunities
 function Clear ()
 {
-AC1 ${row} ${col}
+Calc ${row} ${col}
 if [ "$content" == "9" ]
 then $ECHO "${ESC}${ORANGE}mX "
      map[$idx]=" "
@@ -553,7 +542,7 @@ function Main()
 {
 for ((i=0 ; i<60 ; i++))
 do 
-for ((j=5;j>=1;j--))
+for ((j=10;j>=1;j--))
 do
 $ECHO "${ESC}$((Y+6));1H"
 $ECHO "The clock is ticking: ${j} S        Clear a mine: ${Times} times "
@@ -574,6 +563,8 @@ return $OK
 function armymv()
 {
 
+RE tempy tempx
+
 local line3
 m1y=${arr2[$i]}
 m1x=${arr1[$i]}   
@@ -582,8 +573,32 @@ line3=$(for((i=0;i<2;i++)) do $ECHO "|${ESC}${RED}m ■ ${ESC}${NULL}m"; done )
 $ECHO "${ESC}${m1y};${m1x}H${line3}"
 $ECHO "${ESC}$((m1y+1));${m1x}H${line3}"
 
+#tempy,tempx是军队左下角方块的逻辑坐标
+#棋盘左上角为(1,1)
+tempy=${m1y}
+temp=$((m1x+3))
+tempx=$((temp/4))
+
+#新编触雷逻辑函数
+Check $((tempy-1)) ${tempx}
+Check $((tempy-1)) $((tempx+1))
+Check ${tempy} $((tempx+1))
+
+if [ $LoseFlag == true ]
+then GameOver
+elif [ $m1y -eq 2 ] && [ $m1x -eq 57 ]
+then
+  GameWin
+fi
+
+
+
+
+
+
+#原触雷逻辑
 local temp1 temp2
-temp1=$((m1y-2))
+temp1=$((m1y-1))
 temp2=$((temp1*16-1))
 local temp3
 temp3=$((m1x+3))
@@ -591,102 +606,56 @@ temp1=$((temp3/2))
 local arr_x1 arr_x2 
  arr_x1=`expr $temp2 + $temp1`   
  arr_x2=`expr $temp2 + $temp1 + 16`
- arr_x3=`expr $arr_x1 - 1`
- arr_x4=`expr $arr_x2 - 1`  
-if [ "${map[${arr_x1}]}" == "9" ] || [ "${map[${arr_x2}]}" == "9" ] || [ "${map[${arr_x3}]}" == "9" ] || [ "${map[${arr_x4}]}" == "9" ] 
-then 
-  GameOver
-elif [ $m1y -eq 2 ] && [ $m1x -eq 57 ]
-then
-  GameWin
-fi
-
-#   
-RE
-
+#if [ "${map[${arr_x1}]}" == "9" ] || [ "${map[${arr_x2}]}" == "9" ] 
+#then 
+  #GameOver
+  #debug ${arr_x1} ${arr_x2}
+#elif [ $m1y -eq 2 ] && [ $m1x -eq 57 ]
+#then
+ # GameWin
+#fi
 
 return $OK
 
 }
-
 
 function RE ()
 {
-
-if [ $IDX = D ]||[ $IDX = A ]
-then
-ReOpen $((y-1)) ${x}
+y=$1
+x=$2
 ReOpen ${y} ${x}
-  if ([ $y -ne 0 ])&&(AC2 ${y-2} ${x})
-  then IDX=W
-  elif ([ $y -ne $Y ])&&(AC2 ${y+1} ${x})
-  then IDX=S
-  fi
-fi
-
-if [ $IDX = W ]||[ $IDX = S ]
-then
 ReOpen ${y} $((x+1))
-ReOpen ${y} ${x}
-  if ([ $x -ne $X ])&&(AC2 ${y} ${x+2})
-  then IDX=D
-  elif ([ $x -ne 0 ])&&(AC2 ${y} ${x-1})
-  then IDX=S
-  fi
+ReOpen $((y-1)) $((x+1))
+ReOpen $((y-1)) ${x}
+}
+
+function debug ()
+{
+TEMP1=`expr $1 + 1`
+TEMP2=`expr $2 + 1`
+x1=$((TEMP1%16))
+x2=$((TEMP2%16))
+TEMP1=$((TEMP1-x1))
+TEMP2=$((TEMP2-x2))
+y1=$((TEMP1/16))
+y2=$((TEMP2/16))
+
+ReOpen ${y1} ${x1}
+ReOpen ${y2} ${x2}
+}
+
+function Check()
+{
+c=$1
+d=$2
+_content=${map[((c*Y-Y+d-1))]}
+if [ ${_content} == 9 ]
+then ReOpen ${c} ${d}
+     LoseFlag=true
 fi
-
-case $IDX in
-D)x=`expr $x + 1`
-;;
-A)x=`expr $x - 1`
-;;
-W)y=`expr $y - 1`
-;;
-S)y=`expr $y + 1`
-;;
-esac
-
-return $OK
 }
 
-function check()
-{ 
-local line1
-local line2
-line1=$($ECHO "|${ESC}${SBLUE}m ■ ${ESC}${NULL}m")
-line2=$($ECHO "|${ESC}${GREY}m ■ ${ESC}${NULL}m")   
-for ((i=0 ; i<256 ; i++))
-do
-local x1 y1
-  for ((k=0 ; k<16 ; k++))
-   do
-   if [ $i -gt $((k*16 - 1)) ] && [ $i -le $((k*16 + 15)) ]
-   then
-   x1=$((k+2))
-   j=$(($k*16))  
-   y1=`expr $i - $j`
- 
-   else
-   continue
-   fi
-  done
-local zy1
-local temp   
- temp=$(($y1*3))  
-zy1=`expr $temp - 1` 
- case ${map[$i]} in
-    Y*) $ECHO "${ESC}${x1};$((y1*3))H${map[$i]:1}"
-;;
-     *)  case ${iswalk[$i]} in
-          0)    
-          $ECHO "${ESC}${x1};${zy1}H${line1}";;       
-          1)
-          $ECHO "${ESC}${X1};${zy1}H${line2}";;
-        esac    
-;;
- esac
-done
-}
+
 
 Init
 Menu  
