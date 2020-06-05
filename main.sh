@@ -136,7 +136,7 @@ function Draw ()
         $ECHO "${ESC}1;1H♦${line1}♦"
         for (( i=0; i<Y; i++ ))
         do
-                $ECHO "${ESC}$((i+2));1H${line2} |"
+                $ECHO "${ESC}$((i+2));1H${line2}|"
         done
         $ECHO "${ESC}$((Y+2));1H♦${line1}♦"
         Help
@@ -277,6 +277,11 @@ return $OK
 #clear a mine using one opportunities
 function Clear ()
 {
+
+if [ $Times -eq 0 ]
+then return $OK
+fi
+
 Calc ${row} ${col}
 if [ "$content" == "9" ]
 then $ECHO "${ESC}${ORANGE}mX "
@@ -289,9 +294,7 @@ if [ $mines -eq 0 ]
 then GameWin
 fi
 Times=`expr $Times - 1`
-if [ $Times -eq 0 ]
-then GameOver
-fi
+
 return $OK
 }
 
@@ -569,9 +572,9 @@ local line3
 m1y=${arr2[$i]}
 m1x=${arr1[$i]}   
 
-line3=$(for((i=0;i<2;i++)) do $ECHO "|${ESC}${RED}m ■ ${ESC}${NULL}m"; done ) 
-$ECHO "${ESC}${m1y};${m1x}H${line3}"
-$ECHO "${ESC}$((m1y+1));${m1x}H${line3}"
+line3=$(for((i=0;i<2;i++)) do $ECHO "${ESC}${RED}m| ■ "; done ) 
+$ECHO "${ESC}${m1y};${m1x}H${line3}|"
+$ECHO "${ESC}$((m1y+1));${m1x}H${line3}|"
 
 #tempy,tempx是军队左下角方块的逻辑坐标
 #棋盘左上角为(1,1)
@@ -579,7 +582,7 @@ tempy=${m1y}
 temp=$((m1x+3))
 tempx=$((temp/4))
 
-#新编触雷逻辑函数
+#触雷逻辑函数
 Check $((tempy-1)) ${tempx}
 Check $((tempy-1)) $((tempx+1))
 Check ${tempy} $((tempx+1))
@@ -590,30 +593,6 @@ elif [ $m1y -eq 2 ] && [ $m1x -eq 57 ]
 then
   GameWin
 fi
-
-
-
-
-
-
-#原触雷逻辑
-local temp1 temp2
-temp1=$((m1y-1))
-temp2=$((temp1*16-1))
-local temp3
-temp3=$((m1x+3))
-temp1=$((temp3/2))  
-local arr_x1 arr_x2 
- arr_x1=`expr $temp2 + $temp1`   
- arr_x2=`expr $temp2 + $temp1 + 16`
-#if [ "${map[${arr_x1}]}" == "9" ] || [ "${map[${arr_x2}]}" == "9" ] 
-#then 
-  #GameOver
-  #debug ${arr_x1} ${arr_x2}
-#elif [ $m1y -eq 2 ] && [ $m1x -eq 57 ]
-#then
- # GameWin
-#fi
 
 return $OK
 
@@ -629,27 +608,14 @@ ReOpen $((y-1)) $((x+1))
 ReOpen $((y-1)) ${x}
 }
 
-function debug ()
-{
-TEMP1=`expr $1 + 1`
-TEMP2=`expr $2 + 1`
-x1=$((TEMP1%16))
-x2=$((TEMP2%16))
-TEMP1=$((TEMP1-x1))
-TEMP2=$((TEMP2-x2))
-y1=$((TEMP1/16))
-y2=$((TEMP2/16))
 
-ReOpen ${y1} ${x1}
-ReOpen ${y2} ${x2}
-}
 
 function Check()
 {
 c=$1
 d=$2
 _content=${map[((c*Y-Y+d-1))]}
-if [ "${_content}"x == "9"x ]
+if [ "${_content}" == "9" ]
 then ReOpen ${c} ${d}
      LoseFlag=true
 fi
