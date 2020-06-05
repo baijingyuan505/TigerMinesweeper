@@ -649,7 +649,7 @@ function Check()
 c=$1
 d=$2
 _content=${map[((c*Y-Y+d-1))]}
-if [ ${_content} == 9 ]
+if [ "${_content}"x == "9"x ]
 then ReOpen ${c} ${d}
      LoseFlag=true
 fi
